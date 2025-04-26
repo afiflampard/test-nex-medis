@@ -23,7 +23,7 @@ type ResponseOfTopFive struct {
 
 type Order struct {
 	ID          uuid.UUID  `gorm:"column:id" json:"id"`
-	UserID      uuid.UUID  `gorm:"column:user_id" json:"user_id"`
+	CustomerID  uuid.UUID  `gorm:"column:customer_id" json:"customer_id"`
 	OrderDate   time.Time  `gorm:"column:order_date" json:"order_date"`
 	CartID      uuid.UUID  `gorm:"column:cart_id" json:"cart_id"`
 	Status      string     `gorm:"column:status" json:"status"`
@@ -32,7 +32,7 @@ type Order struct {
 	UpdatedAt   *time.Time `gorm:"column:updated_at" json:"updated_at,omitempty"`
 
 	Cart       Cart        `gorm:"foreignKey:CartID" json:"cart,omitempty"`
-	User       User        `gorm:"foreignKey:UserID" json:"user,omitempty"`
+	Customer   User        `gorm:"foreignKey:CustomerID" json:"customer,omitempty"`
 	OrderItems []OrderItem `gorm:"foreignKey:OrderID;references:ID" json:"order_items"`
 }
 
@@ -43,7 +43,7 @@ func (Order) TableName() string {
 func (o *Order) CreateNewOrder(cartID, userID uuid.UUID) {
 	currentlyUpdated := time.Now()
 	o.ID = uuid.New()
-	o.UserID = userID
+	o.CustomerID = userID
 	o.OrderDate = time.Now()
 	o.CartID = cartID
 	o.Status = OrderStatusPending

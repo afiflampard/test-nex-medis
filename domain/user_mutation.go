@@ -1,11 +1,11 @@
 package domain
 
 import (
-	"boilerplate/db"
 	"boilerplate/forms"
 	"context"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -16,6 +16,8 @@ type UserMutation interface {
 	Login(ctx context.Context, form forms.LoginForm) (UserResponseLogin, Token, error)
 	Register(ctx context.Context, form forms.RegisterForm) (User, error)
 	FindByID(ctx context.Context, userID uuid.UUID) (User, error)
+	FindByEmail(ctx context.Context, email string) (*User, error)
+	FindByJoinDate(ctx context.Context, joinDate time.Time) (*[]User, error)
 
 	Commit(ctx context.Context) error
 	Rollback(ctx context.Context) error
@@ -117,10 +119,35 @@ func (g *gormMutationUser) FindByID(ctx context.Context, userID uuid.UUID) (User
 		user User
 		err  error
 	)
-	if err = db.GetDB().First(&user, userID).Error; err != nil {
+	if err = g.tx.First(&user, userID).Error; err != nil {
 		return user, nil
 	}
 	return user, err
+}
+
+func (g *gormMutationUser) FindByEmail(ctx context.Context, email string) (*User, error) {
+	var (
+		user User
+		err  error
+	)
+
+	if err = g.tx.Where("email = ?", email).Take(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (g *gormMutationUser) FindByJoinDate(ctx context.Context, joinDate time.Time) (*[]User, error) {
+	var (
+		user []User
+	)
+
+	if err := g.tx.Where("created_at > ?", joinDate).Find(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 func (g *gormMutationUser) Commit(ctx context.Context) error {

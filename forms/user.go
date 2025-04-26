@@ -2,6 +2,7 @@ package forms
 
 import (
 	"encoding/json"
+	"time"
 
 	"gopkg.in/go-playground/validator.v8"
 )
@@ -18,6 +19,14 @@ type RegisterForm struct {
 	Email    string `form:"email" json:"email" binding:"required,email"`
 	Password string `form:"password" json:"password" binding:"required,min=3,max=50"`
 	Role     string `form:"role" json:"role"`
+}
+
+type FindByEmailForm struct {
+	Email string `form:"email" json:"email"`
+}
+
+type FindByJoinDateForm struct {
+	JoinDate time.Time `form:"join_date" json:"join_date"`
 }
 
 func (f UserForm) Name(tag string, errMsg ...string) (message string) {

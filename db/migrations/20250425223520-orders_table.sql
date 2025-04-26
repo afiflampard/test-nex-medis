@@ -2,7 +2,7 @@
 -- +migrate Up
 CREATE TABLE orders(
     "id" uuid NOT NULL,
-    "user_id" uuid NOT NULL,
+    "customer_id" uuid NOT NULL,
     "order_date" timestamptz NOT NULL,
     "cart_id" uuid NOT NULL,
     "status" VARCHAR(50) NOT NULL CHECK (status IN ('pending', 'paid', 'shipped', 'completed', 'cancelled')),
@@ -10,7 +10,7 @@ CREATE TABLE orders(
     "created_at" timestamptz NOT NULL DEFAULT now(),
     "updated_at" timestamptz,
     PRIMARY KEY("id"),
-    CONSTRAINT "fk_orders_user" FOREIGN KEY ("user_id") REFERENCES "users"
+    CONSTRAINT "fk_orders_user" FOREIGN KEY ("customer_id") REFERENCES "users"
 );
 
 CREATE INDEX idx_orders_order_date ON orders(order_date);

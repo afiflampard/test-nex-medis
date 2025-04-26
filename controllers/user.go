@@ -94,3 +94,63 @@ func (ctrl UserServiceController) Register(c *gin.Context) {
 		"Data":    user.ID,
 	})
 }
+
+func (ctrl UserServiceController) FindByEmail(c *gin.Context) {
+	var (
+		ctx          = c.Request.Context()
+		inputByEmail forms.FindByEmailForm
+	)
+
+	if err := c.ShouldBindJSON(&inputByEmail); err != nil {
+		c.AbortWithStatusJSON(http.StatusNotAcceptable, gin.H{
+			"message": err,
+		})
+		return
+	}
+	mutation := domain.NewGormMutationUser(ctx, ctrl.DB)
+	user, err := mutation.FindByEmail(ctx, inputByEmail.Email)
+	if err != nil {
+		mutation.Rollback(ctx)
+		c.AbortWithStatusJSON(http.StatusNotAcceptable, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	mutation.Commit(ctx)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully Get User",
+		"Data":    user,
+	})
+
+}
+
+func (ctrl UserServiceController) FindByJoinDate(c *gin.Context) {
+	var (
+		ctx             = c.Request.Context()
+		inputByJoinDate forms.FindByJoinDateForm
+	)
+
+	if err := c.ShouldBindJSON(&inputByJoinDate); err != nil {
+		c.AbortWithStatusJSON(http.StatusNotAcceptable, gin.H{
+			"message": err,
+		})
+		return
+	}
+	mutation := domain.NewGormMutationUser(ctx, ctrl.DB)
+	userList, err := mutation.FindByJoinDate(ctx, inputByJoinDate.JoinDate)
+	if err != nil {
+		mutation.Rollback(ctx)
+		c.AbortWithStatusJSON(http.StatusNotAcceptable, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	mutation.Commit(ctx)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully Get User",
+		"Data":    userList,
+	})
+
+}
