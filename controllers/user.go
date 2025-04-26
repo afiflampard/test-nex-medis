@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -93,6 +94,30 @@ func (ctrl UserServiceController) Register(c *gin.Context) {
 		"message": "Successfully registered",
 		"Data":    user.ID,
 	})
+}
+
+func (ctrl UserServiceController) FindByID(c *gin.Context) {
+	var (
+		ctx    = c.Request.Context()
+		userID = c.Param("id")
+	)
+
+	mutation := domain.NewGormMutationUser(ctx, ctrl.DB)
+	user, err := mutation.FindByID(ctx, uuid.MustParse(userID))
+	if err != nil {
+		mutation.Rollback(ctx)
+		c.AbortWithStatusJSON(http.StatusNotAcceptable, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	mutation.Commit(ctx)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully Get User",
+		"Data":    user,
+	})
+
 }
 
 func (ctrl UserServiceController) FindByEmail(c *gin.Context) {

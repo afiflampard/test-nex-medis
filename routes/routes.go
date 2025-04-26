@@ -36,6 +36,9 @@ func Routes(router *gin.Engine) {
 
 		v1.POST("/user/login", user.Login)
 		v1.POST("/user/register", user.Register)
+		v1.POST("/user/find-by-email", user.FindByEmail)
+		v1.GET("/user/:id", middleware.AuthMiddleware(), user.FindByID)
+		v1.POST("/user/find-by-join-date", middleware.AuthMiddleware(), AuthorizeRoleMiddleware([]string{"admin"}), user.FindByJoinDate)
 
 		order := controllers.NewOrderServiceMutation(db.GetDB())
 		orderRoute := v1.Group("/order")
