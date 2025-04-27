@@ -17,6 +17,7 @@ type OrderMutation interface {
 	Checkout(ctx context.Context, form forms.CheckoutOrderInput) (*uuid.UUID, error)
 	Shipping(ctx context.Context, idOrder uuid.UUID) (*uuid.UUID, error)
 	Canceled(ctx context.Context, idOrder uuid.UUID) (*uuid.UUID, error)
+	Completed(ctx context.Context, idOrder uuid.UUID) (*uuid.UUID, error)
 	FindFiveTopClientAmount(ctx context.Context) ([]ResponseOfTopFive, error)
 
 	Commit(ctx context.Context) error
@@ -133,13 +134,17 @@ func (gom *gormMutationOrder) Order(ctx context.Context, form forms.OrderItemInp
 		}
 	}
 
+	orderPrice := 0.0
 	for productID, qty := range productMapInput {
 		var orderItem OrderItem
 		valueProduct := productMap[productID]
 		price := valueProduct.Price * float64(qty)
+		orderPrice += price
 		orderItem.CreateNewOrderItem(order.ID, productID, qty, price)
 		orderItemList = append(orderItemList, orderItem)
 	}
+
+	order.TotalAmount = orderPrice
 
 	if err := gom.tx.Create(&order).Error; err != nil {
 		return nil, err
@@ -207,6 +212,10 @@ func (gom *gormMutationOrder) Shipping(ctx context.Context, idOrder uuid.UUID) (
 	if err := gom.tx.First(&order, idOrder).Error; err != nil {
 		return nil, err
 	}
+
+	if order.Status != OrderStatusPaid {
+		return nil, fmt.Errorf("status not paid")
+	}
 	order.UpdateStatusOrder(OrderStatusShipped)
 
 	if err := gom.tx.Save(&order).Error; err != nil {
@@ -223,6 +232,9 @@ func (gom *gormMutationOrder) Completed(ctx context.Context, idOrder uuid.UUID) 
 
 	if err := gom.tx.First(&order, idOrder).Error; err != nil {
 		return nil, err
+	}
+	if order.Status != OrderStatusShipped {
+		return nil, fmt.Errorf("cannot completed because order not shipped")
 	}
 	order.UpdateStatusOrder(OrderStatusCompleted)
 
@@ -283,7 +295,7 @@ func (g *gormMutationOrder) FindFiveTopClientAmount(ctx context.Context) ([]Resp
 
 	rawDB := `WITH last_month_orders AS (
     SELECT
-        user_id,
+        customer_id AS user_id,
         SUM(total_amount) AS total_spent
     FROM
         orders
@@ -292,11 +304,11 @@ func (g *gormMutationOrder) FindFiveTopClientAmount(ctx context.Context) ([]Resp
         AND order_date < date_trunc('month', CURRENT_DATE)
         AND status IN ('paid', 'shipped', 'completed')
     GROUP BY
-        user_id
+        customer_id
 	)
 		SELECT
     	u.id,
-    	u.username,
+		u.name,
     	u.email,
     	lmo.total_spent
 		FROM
@@ -307,7 +319,7 @@ func (g *gormMutationOrder) FindFiveTopClientAmount(ctx context.Context) ([]Resp
     	lmo.total_spent DESC
 	LIMIT 5;`
 
-	if err := g.tx.Raw(rawDB).Find(&topFiveList).Error; err != nil {
+	if err := g.tx.Debug().Raw(rawDB).Find(&topFiveList).Error; err != nil {
 		return nil, err
 	}
 

@@ -143,7 +143,7 @@ func (g *gormMutationUser) FindByJoinDate(ctx context.Context, joinDate time.Tim
 		user []User
 	)
 
-	if err := g.tx.Where("created_at > ?", joinDate).Find(&user).Error; err != nil {
+	if err := g.tx.Debug().Where("created_at > ?", joinDate).Find(&user).Error; err != nil {
 		return nil, err
 	}
 

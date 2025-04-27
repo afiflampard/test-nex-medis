@@ -11,7 +11,6 @@ CREATE TABLE users(
     CONSTRAINT "fk_role" FOREIGN KEY ("role_id") REFERENCES "role"
 ); 
 
-CREATE UNIQUE INDEX idx_users_username ON ssers(username);
 CREATE UNIQUE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_created_at ON users(created_at);
 

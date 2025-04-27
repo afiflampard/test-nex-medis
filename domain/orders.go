@@ -16,7 +16,6 @@ const (
 
 type ResponseOfTopFive struct {
 	UserID     uuid.UUID `gorm:"column:id" json:"id"`
-	UserName   string    `gorm:"column:username" json:"username"`
 	Email      string    `gorm:"column:email" json:"email"`
 	TotalSpent float64   `gorm:"column:total_spent" json:"total_spent"`
 }

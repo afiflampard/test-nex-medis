@@ -171,6 +171,29 @@ func (osc OrderServiceController) Shipping(c *gin.Context) {
 	})
 }
 
+func (osc OrderServiceController) Completed(c *gin.Context) {
+	var (
+		idOrder = c.Param("id")
+		ctx     = c.Request.Context()
+	)
+
+	mutation := domain.NewGormMutationOrder(ctx, osc.DB)
+	id, err := mutation.Completed(ctx, uuid.MustParse(idOrder))
+	if err != nil {
+		mutation.Rollback(ctx)
+		c.AbortWithStatusJSON(http.StatusNotAcceptable, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	mutation.Commit(ctx)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "successfully completed",
+		"Data":    id,
+	})
+}
+
 func (osc OrderServiceController) Canceled(c *gin.Context) {
 	var (
 		idOrder = c.Param("id")

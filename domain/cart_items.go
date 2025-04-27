@@ -20,7 +20,7 @@ type CartItem struct {
 }
 
 func (ci CartItem) TableName() string {
-	return "cart_item"
+	return "cart_items"
 }
 
 func (ci *CartItem) CreateNewCarItems(form forms.CartItemInput, cartID uuid.UUID) {

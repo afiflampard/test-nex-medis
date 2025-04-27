@@ -49,6 +49,7 @@ func Routes(router *gin.Engine) {
 		orderRoute.POST("/checkout", middleware.AuthMiddleware(), AuthorizeRoleMiddleware([]string{"client"}), order.Checkout)
 		orderRoute.POST("/shipping/:id", middleware.AuthMiddleware(), AuthorizeRoleMiddleware([]string{"seller"}), order.Shipping)
 		orderRoute.POST("/cancelled/:id", middleware.AuthMiddleware(), AuthorizeRoleMiddleware([]string{"client"}), order.Canceled)
+		orderRoute.POST("/completed/:id", middleware.AuthMiddleware(), AuthorizeRoleMiddleware([]string{"admin"}), order.Completed)
 		orderRoute.POST("/get-five", middleware.AuthMiddleware(), AuthorizeRoleMiddleware([]string{"seller"}), order.FindFiveTopClientAmount)
 
 		product := controllers.NewProductServiceMutation(db.GetDB())

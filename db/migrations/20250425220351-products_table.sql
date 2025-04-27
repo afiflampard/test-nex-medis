@@ -6,6 +6,7 @@ CREATE TABLE products(
     "description" text,
     "price" DECIMAL(10,2) NOT NULL,
     "stock" INT NOT NULL,
+    "user_id" uuid NOT NULL,
     "status" text,
     "created_at" timestamptz NOT NULL DEFAULT now(),
     "updated_at" timestamptz,

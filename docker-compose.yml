@@ -3,7 +3,7 @@ version: '3.3'
 services:
   postgres:
     image: postgres:latest
-    container_name: testing
+    container_name: test-nexmedis
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=postgres

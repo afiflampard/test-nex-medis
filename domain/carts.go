@@ -22,6 +22,7 @@ func (c Cart) TableName() string {
 
 func (c *Cart) CreateNewCart(userID uuid.UUID) {
 	currentlyUpdate := time.Now()
+	c.ID = uuid.New()
 	c.UserID = userID
 	c.CreatedAt = time.Now()
 	c.UpdatedAt = &currentlyUpdate
