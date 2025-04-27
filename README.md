@@ -122,7 +122,11 @@ This API supports an e-commerce system for buying products, managing orders, and
 
 ## ERD Diagram
 
+![Screenshot from 2025-04-27 12-37-46](https://github.com/user-attachments/assets/40707bcb-088c-477a-903c-1e90caaa4717)
+
 
 ---
 
 ## Screenshoot Swagger Open API
+
+![Screenshot from 2025-04-27 12-38-24](https://github.com/user-attachments/assets/e8429249-a76d-491c-b9d9-f6dd76cb7f16)
