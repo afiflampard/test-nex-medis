@@ -96,6 +96,17 @@ func (ctrl UserServiceController) Register(c *gin.Context) {
 	})
 }
 
+// @Summary Get User by ID
+// @Description Get a user by their ID.
+// @Tags User
+// @Accept  json
+// @Produce  json
+// @Param id path string true "User ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /user/{id} [get]
 func (ctrl UserServiceController) FindByID(c *gin.Context) {
 	var (
 		ctx    = c.Request.Context()
@@ -120,6 +131,17 @@ func (ctrl UserServiceController) FindByID(c *gin.Context) {
 
 }
 
+// @Summary Get User by Email
+// @Description Get a user by their email.
+// @Tags User
+// @Accept  json
+// @Produce  json
+// @Param body body forms.FindByEmailForm true "User Email"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /user/find-by-email [post]
 func (ctrl UserServiceController) FindByEmail(c *gin.Context) {
 	var (
 		ctx          = c.Request.Context()
@@ -150,6 +172,17 @@ func (ctrl UserServiceController) FindByEmail(c *gin.Context) {
 
 }
 
+// @Summary Get Users by Join Date
+// @Description Get a list of users who joined on a specific date.
+// @Tags User
+// @Accept  json
+// @Produce  json
+// @Param body body forms.FindByJoinDateForm true "Join Date"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /user/find-by-join-date [post]
 func (ctrl UserServiceController) FindByJoinDate(c *gin.Context) {
 	var (
 		ctx             = c.Request.Context()

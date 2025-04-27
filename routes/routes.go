@@ -46,7 +46,7 @@ func Routes(router *gin.Engine) {
 		orderRoute.POST("/create-cart-item", middleware.AuthMiddleware(), AuthorizeRoleMiddleware([]string{"client"}), order.CreateCartItem)
 		orderRoute.GET("/cart/:id", middleware.AuthMiddleware(), AuthorizeRoleMiddleware([]string{"client"}), order.FindCartByUserID)
 		orderRoute.POST("/order", middleware.AuthMiddleware(), AuthorizeRoleMiddleware([]string{"client"}), order.Order)
-		orderRoute.POST("/checkout", middleware.AuthMiddleware(), AuthorizeRoleMiddleware([]string{"client"}), order.Checkout)
+		orderRoute.POST("/checkout", middleware.AuthMiddleware(), AuthorizeRoleMiddleware([]string{"admin"}), order.Checkout)
 		orderRoute.POST("/shipping/:id", middleware.AuthMiddleware(), AuthorizeRoleMiddleware([]string{"seller"}), order.Shipping)
 		orderRoute.POST("/cancelled/:id", middleware.AuthMiddleware(), AuthorizeRoleMiddleware([]string{"client"}), order.Canceled)
 		orderRoute.POST("/completed/:id", middleware.AuthMiddleware(), AuthorizeRoleMiddleware([]string{"admin"}), order.Completed)

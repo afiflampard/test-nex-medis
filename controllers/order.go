@@ -20,6 +20,15 @@ func NewOrderServiceMutation(db *gorm.DB) *OrderServiceController {
 	}
 }
 
+// @Summary Create a new cart
+// @Description Create a new cart for a user by their ID
+// @Tags Order
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /order/create-cart [post]
 func (osc OrderServiceController) CreateCart(c *gin.Context) {
 	var (
 		ctx    = c.Request.Context()
@@ -42,6 +51,16 @@ func (osc OrderServiceController) CreateCart(c *gin.Context) {
 	})
 }
 
+// @Summary Add items to cart
+// @Description Add multiple items to a user's cart
+// @Tags Order
+// @Accept  json
+// @Produce  json
+// @Param body body []forms.CartItemInput true "Cart Item Input"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /order/create-cart-item [post]
 func (osc OrderServiceController) CreateCartItem(c *gin.Context) {
 	var (
 		ctx           = c.Request.Context()
@@ -71,6 +90,15 @@ func (osc OrderServiceController) CreateCartItem(c *gin.Context) {
 
 }
 
+// @Summary Find cart by user ID
+// @Description Retrieve all carts for a specific user based on user ID
+// @Tags Order
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /order/find-cart-by-user-id [get]
 func (osc OrderServiceController) FindCartByUserID(c *gin.Context) {
 	var (
 		ctx    = c.Request.Context()
@@ -94,6 +122,16 @@ func (osc OrderServiceController) FindCartByUserID(c *gin.Context) {
 	})
 }
 
+// @Summary Place an order
+// @Description Place an order for a user with the specified order details
+// @Tags Order
+// @Accept  json
+// @Produce  json
+// @Param body body forms.OrderItemInput true "Order Input"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /order/place [post]
 func (osc OrderServiceController) Order(c *gin.Context) {
 	var (
 		ctx            = c.Request.Context()
@@ -123,6 +161,16 @@ func (osc OrderServiceController) Order(c *gin.Context) {
 	})
 }
 
+// @Summary Checkout order
+// @Description Checkout and process the order
+// @Tags Order
+// @Accept  json
+// @Produce  json
+// @Param body body forms.CheckoutOrderInput true "Checkout Input"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /order/checkout [post]
 func (osc OrderServiceController) Checkout(c *gin.Context) {
 	var (
 		ctx               = c.Request.Context()
@@ -149,6 +197,16 @@ func (osc OrderServiceController) Checkout(c *gin.Context) {
 	})
 }
 
+// @Summary Mark order as shipped
+// @Description Update order status to "shipped"
+// @Tags Order
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Order ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /order/shipping/{id} [post]
 func (osc OrderServiceController) Shipping(c *gin.Context) {
 	var (
 		idOrder = c.Param("id")
@@ -171,6 +229,16 @@ func (osc OrderServiceController) Shipping(c *gin.Context) {
 	})
 }
 
+// @Summary Mark order as completed
+// @Description Update order status to "completed"
+// @Tags Order
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Order ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /order/completed/{id} [post]
 func (osc OrderServiceController) Completed(c *gin.Context) {
 	var (
 		idOrder = c.Param("id")
@@ -194,6 +262,16 @@ func (osc OrderServiceController) Completed(c *gin.Context) {
 	})
 }
 
+// @Summary Mark order as canceled
+// @Description Update the status of an order to "canceled"
+// @Tags Order
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Order ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /order/canceled/{id} [post]
 func (osc OrderServiceController) Canceled(c *gin.Context) {
 	var (
 		idOrder = c.Param("id")
@@ -216,6 +294,14 @@ func (osc OrderServiceController) Canceled(c *gin.Context) {
 	})
 }
 
+// @Summary Retrieve the top 5 clients based on their total order amount
+// @Description Get the top 5 clients who have spent the most on orders
+// @Tags Order
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /order/top-clients [get]
 func (osc OrderServiceController) FindFiveTopClientAmount(c *gin.Context) {
 	var (
 		ctx = c.Request.Context()

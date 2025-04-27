@@ -1,13 +1,30 @@
 basePath: /v1
 definitions:
-  forms.LoanStatusInput:
+  forms.CartItemInput:
     properties:
-      status:
+      product_id:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  forms.CheckoutOrderInput:
+    properties:
+      order_id:
+        type: string
+      product_checkout_list:
         items:
-          type: string
+          $ref: '#/definitions/forms.ProductCheckout'
         type: array
-    required:
-    - status
+    type: object
+  forms.FindByEmailForm:
+    properties:
+      email:
+        type: string
+    type: object
+  forms.FindByJoinDateForm:
+    properties:
+      join_date:
+        type: string
     type: object
   forms.LoginForm:
     properties:
@@ -20,6 +37,49 @@ definitions:
     required:
     - email
     - password
+    type: object
+  forms.OrderItemInput:
+    properties:
+      cart_id:
+        type: string
+      product_order_list:
+        items:
+          $ref: '#/definitions/forms.ProductOrder'
+        type: array
+    type: object
+  forms.ProductCheckout:
+    properties:
+      price:
+        type: number
+      product_id:
+        type: string
+    type: object
+  forms.ProductFormInput:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      status:
+        type: string
+      stock:
+        type: integer
+    type: object
+  forms.ProductOrder:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  forms.ProductStatus:
+    properties:
+      status:
+        items:
+          type: string
+        type: array
     type: object
   forms.RegisterForm:
     properties:
@@ -43,12 +103,12 @@ definitions:
 host: localhost:8000
 info:
   contact:
-    email: you@example.com
-    name: Your Name
+    email: musyayyidinafif32@gmail.com
+    name: Afif Musyayyidin
   description: API Documentation for your Go Gin boilerplate
   license:
-    name: MIT
-    url: https://opensource.org/licenses/MIT
+    name: FIFA
+    url: https://opensource.org/licenses/FIFA
   termsOfService: http://swagger.io/terms/
   title: Boilerplate API
   version: "1.0"
@@ -109,11 +169,13 @@ paths:
       summary: Register a new user
       tags:
       - Auth
-  /loan/{id}:
-    get:
-      description: Retrieve loan detail by its UUID
+  /order/canceled/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Update the status of an order to "canceled"
       parameters:
-      - description: Loan UUID
+      - description: Order ID
         in: path
         name: id
         required: true
@@ -126,160 +188,241 @@ paths:
           schema:
             additionalProperties: true
             type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
         "500":
           description: Internal Server Error
           schema:
             additionalProperties: true
             type: object
-      security:
-      - BearerAuth: []
-      summary: Get a loan by ID
+      summary: Mark order as canceled
       tags:
-      - Loan
-  /loan/approved:
-    post:
-      consumes:
-      - multipart/form-data
-      description: Employee approves a loan by uploading proof picture
-      parameters:
-      - description: LoanApprovedInput JSON string
-        in: formData
-        name: loan_approved
-        required: true
-        type: string
-      - description: Proof Picture File
-        in: formData
-        name: proof_picture_url
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      security:
-      - BearerAuth: []
-      summary: Approve a loan by employee
-      tags:
-      - Loan
-  /loan/create:
-    post:
-      consumes:
-      - multipart/form-data
-      description: Create a loan request by borrower/investor/employee, including
-        uploading agreement letter
-      parameters:
-      - description: LoanFormInput JSON string
-        in: formData
-        name: loan
-        required: true
-        type: string
-      - description: Agreement Letter
-        in: formData
-        name: agreement_letter_link
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      security:
-      - BearerAuth: []
-      summary: Create a new loan
-      tags:
-      - Loan
-  /loan/disbursed:
-    post:
-      consumes:
-      - multipart/form-data
-      description: Disburse a loan by employee
-      parameters:
-      - description: LoanDisbursementInput JSON
-        in: formData
-        name: loan_disbursement
-        required: true
-        type: string
-      - description: Signed Agreement File
-        in: formData
-        name: signed_agreement_url
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      security:
-      - BearerAuth: []
-      summary: Disburse a loan
-      tags:
-      - Loan
-  /loan/invested:
-    post:
-      consumes:
-      - multipart/form-data
-      description: Investor sends investment to loan
-      parameters:
-      - description: InvestFormInput JSON string
-        in: formData
-        name: loan_investment
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      security:
-      - BearerAuth: []
-      summary: Make an investment to a loan
-      tags:
-      - Loan
-  /loan/loan-list:
+      - Order
+  /order/checkout:
     post:
       consumes:
       - application/json
-      description: Retrieve all loans filtered by status
+      description: Checkout and process the order
       parameters:
-      - description: Loan Status Filter
+      - description: Checkout Input
         in: body
-        name: loanStatus
+        name: body
         required: true
         schema:
-          $ref: '#/definitions/forms.LoanStatusInput'
+          $ref: '#/definitions/forms.CheckoutOrderInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Checkout order
+      tags:
+      - Order
+  /order/completed/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Update order status to "completed"
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Mark order as completed
+      tags:
+      - Order
+  /order/create-cart:
+    post:
+      consumes:
+      - application/json
+      description: Create a new cart for a user by their ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new cart
+      tags:
+      - Order
+  /order/create-cart-item:
+    post:
+      consumes:
+      - application/json
+      description: Add multiple items to a user's cart
+      parameters:
+      - description: Cart Item Input
+        in: body
+        name: body
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/forms.CartItemInput'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Add items to cart
+      tags:
+      - Order
+  /order/find-cart-by-user-id:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all carts for a specific user based on user ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Find cart by user ID
+      tags:
+      - Order
+  /order/place:
+    post:
+      consumes:
+      - application/json
+      description: Place an order for a user with the specified order details
+      parameters:
+      - description: Order Input
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/forms.OrderItemInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Place an order
+      tags:
+      - Order
+  /order/shipping/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Update order status to "shipped"
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Mark order as shipped
+      tags:
+      - Order
+  /order/top-clients:
+    get:
+      consumes:
+      - application/json
+      description: Get the top 5 clients who have spent the most on orders
       produces:
       - application/json
       responses:
@@ -293,11 +436,225 @@ paths:
           schema:
             additionalProperties: true
             type: object
-      security:
-      - BearerAuth: []
-      summary: Get all loans
+      summary: Retrieve the top 5 clients based on their total order amount
       tags:
-      - Loan
+      - Order
+  /product:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of products based on their status.
+      parameters:
+      - description: Product Status
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/forms.ProductStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get List of Products
+      tags:
+      - Product
+  /product/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a product by its ID.
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get Product by ID
+      tags:
+      - Product
+  /product/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new product with the given details.
+      parameters:
+      - description: Product Input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/forms.ProductFormInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create Product
+      tags:
+      - Product
+  /user/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a user by their ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get User by ID
+      tags:
+      - User
+  /user/find-by-email:
+    post:
+      consumes:
+      - application/json
+      description: Get a user by their email.
+      parameters:
+      - description: User Email
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/forms.FindByEmailForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get User by Email
+      tags:
+      - User
+  /user/find-by-join-date:
+    post:
+      consumes:
+      - application/json
+      description: Get a list of users who joined on a specific date.
+      parameters:
+      - description: Join Date
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/forms.FindByJoinDateForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get Users by Join Date
+      tags:
+      - User
 securityDefinitions:
   BearerAuth:
     in: header

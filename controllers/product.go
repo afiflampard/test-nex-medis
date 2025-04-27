@@ -20,6 +20,16 @@ func NewProductServiceMutation(db *gorm.DB) *ProductServiceController {
 	}
 }
 
+// @Summary Create Product
+// @Description Create a new product with the given details.
+// @Tags Product
+// @Accept  json
+// @Produce  json
+// @Param input body forms.ProductFormInput true "Product Input"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /product/create [post]
 func (psc ProductServiceController) CreateProducts(c *gin.Context) {
 	var (
 		ctx                    = c.Request.Context()
@@ -48,6 +58,17 @@ func (psc ProductServiceController) CreateProducts(c *gin.Context) {
 	})
 }
 
+// @Summary Get Product by ID
+// @Description Get a product by its ID.
+// @Tags Product
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Product ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /product/{id} [get]
 func (psc ProductServiceController) FindProductByID(c *gin.Context) {
 	var (
 		ctx       = c.Request.Context()
@@ -70,6 +91,16 @@ func (psc ProductServiceController) FindProductByID(c *gin.Context) {
 	})
 }
 
+// @Summary Get List of Products
+// @Description Get a list of products based on their status.
+// @Tags Product
+// @Accept  json
+// @Produce  json
+// @Param status body forms.ProductStatus true "Product Status"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /product [get]
 func (psc ProductServiceController) FindProductList(c *gin.Context) {
 	var (
 		ctx        = c.Request.Context()
