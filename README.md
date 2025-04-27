@@ -6,7 +6,7 @@ This API supports an e-commerce system for buying products, managing orders, and
 ### User Roles
 - **Admin**: Has full control over the system, including monitoring orders, changing the order status, and managing users and products.
 - **Seller**: Manages the products they sell, processes orders, and updates the order status to **shipping** once payment is confirmed.
-- **Client**: The buyer who places orders, makes payments, and tracks their order status.
+- **Client**: The buyer who places orders, makes payments
 
 ### Business Flow
 
